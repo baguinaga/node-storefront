@@ -1,0 +1,24 @@
+{
+  "name": "node-storefront",
+  "version": "1.0.0",
+  "description": "Node-Storefront is a CLI interface application that uses node.js and a local MySQL database to simulate a rudimentary retail/sales database. ",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/baguinaga/Node-Storefront.git"
+  },
+  "author": "Billy Aguinaga",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/baguinaga/Node-Storefront/issues"
+  },
+  "homepage": "https://github.com/baguinaga/Node-Storefront#readme",
+  "dependencies": {
+    "inquirer": "^6.2.0",
+    "mysql": "^2.16.0"
+  }
+}
