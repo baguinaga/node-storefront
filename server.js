@@ -47,22 +47,39 @@ const purchaseById = () => {
 const checkInventory = (purchase) => {
   db.query("SELECT * FROM products WHERE id = ?", purchase.id, (err, item) => {
     if (err) throw err;
-    if (item === []) {
-      console.log("Sorry, that item does not exist in our inventory.");
+
+    if (item.length === 0) {
+      console.log("Sorry, that item does not exist in our inventory.\n");
       purchaseById();
     } else {
       if (item.stock_quantity === 0) {
-        console.log("Sorry, that itme is out of stock.")
+        console.log("Sorry, that itme is out of stock.\n")
       } else {
-        updateInventory();
+        updateInventory(item);
       }
     }
   })
 }
 
+const updateInventory = (item) => {
+  const newStock = item.stock_quantity - 1;
+  db.query("UPDATE products SET ? WHERE ?", [
+    {
+      stock_quantity: newStock
+    },
+    {
+      id: item.id
+    }
+  ]), (err, result) => {
+    if (err) throw err;
+    console.log("Purchase completed. Thank you.\n");
+    displayStock();
+  }
+}
+
 db.connect(err => {
 
   if (err) throw err;
-  console.log("Connected to database.");
+  console.log("Connected to database.\n");
   displayStock();
 });
