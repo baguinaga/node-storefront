@@ -12,7 +12,7 @@ const db = mysql.createConnection({
   database: "storefront_db"
 });
 
-const displayStock = () => {
+const displayStock = (purchase) => {
 
   db.query("SELECT * FROM products", function (err, inventory) {
     if (err) throw err;
@@ -27,6 +27,10 @@ const displayStock = () => {
     })
     let output = table(data);
     console.log(output);
+    
+    if (purchase) {
+      console.log("Purchase completed. Thank you.\n");
+    }
     purchaseById();
   })
 }
@@ -52,29 +56,30 @@ const checkInventory = (purchase) => {
       console.log("Sorry, that item does not exist in our inventory.\n");
       purchaseById();
     } else {
-      if (item.stock_quantity === 0) {
-        console.log("Sorry, that itme is out of stock.\n")
+      if (item[0].stock_quantity <= 0) {
+        console.log("Sorry, that item is out of stock.\n")
+        purchaseById();
       } else {
-        updateInventory(item);
+        updateInventory(item[0]);
       }
     }
   })
 }
 
 const updateInventory = (item) => {
+
   const newStock = item.stock_quantity - 1;
-  db.query("UPDATE products SET ? WHERE ?", [
-    {
+
+  db.query("UPDATE products SET ? WHERE ?", [{
       stock_quantity: newStock
     },
     {
       id: item.id
     }
-  ]), (err, result) => {
+  ], (err, result) => {
     if (err) throw err;
-    console.log("Purchase completed. Thank you.\n");
-    displayStock();
-  }
+    displayStock(true);
+  })
 }
 
 db.connect(err => {
