@@ -1,8 +1,6 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql");
-const {
-  table
-} = require("table");
+const {table} = require("table");
 
 const db = mysql.createConnection({
   host: "localhost",
@@ -12,22 +10,27 @@ const db = mysql.createConnection({
   database: "storefront_db"
 });
 
+const tableInventory = (inventory) => {
+  let data = [
+    ["ID", "Product", "Department", "Price ($)", "Inventory"]
+  ];
+
+  inventory.forEach(product => {
+    let col = [];
+    col.push(product.id, product.product_name, product.department_name, product.price, product.stock_quantity);
+    data.push(col);
+  })
+
+  let output = table(data);
+  return console.log(output);
+}
+
 const displayStock = (purchase) => {
 
   db.query("SELECT * FROM products", function (err, inventory) {
     if (err) throw err;
-    let data = [
-      ["ID", "Product", "Department", "Price ($)", "Inventory"]
-    ];
+    tableInventory(inventory);
 
-    inventory.forEach(product => {
-      let col = [];
-      col.push(product.id, product.product_name, product.department_name, product.price, product.stock_quantity);
-      data.push(col);
-    })
-    let output = table(data);
-    console.log(output);
-    
     if (purchase) {
       console.log("Purchase completed. Thank you.\n");
     }

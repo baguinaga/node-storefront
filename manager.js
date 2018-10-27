@@ -12,6 +12,21 @@ const db = mysql.createConnection({
   database: "storefront_db"
 });
 
+const tableInventory = (inventory) => {
+  let data = [
+    ["ID", "Product", "Department", "Price ($)", "Inventory"]
+  ];
+
+  inventory.forEach(product => {
+    let col = [];
+    col.push(product.id, product.product_name, product.department_name, product.price, product.stock_quantity);
+    data.push(col);
+  })
+
+  let output = table(data);
+  return console.log(output);
+}
+
 const managerMenu = () => {
 
   inquirer.prompt([{
@@ -21,7 +36,7 @@ const managerMenu = () => {
     choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product"]
   }]).then(response => {
     (response.menuChoice === "View Products for Sale") ? displayInventory():
-      (response.menuChoice === "View Low Inventory") ? console.log("placeholder") :
+    (response.menuChoice === "View Low Inventory") ? lowInventory() :
       console.log("end")
   });
 }
@@ -30,22 +45,22 @@ const displayInventory = () => {
 
   db.query("SELECT * FROM products", function (err, inventory) {
     if (err) throw err;
-    let data = [
-      ["ID", "Product", "Department", "Price ($)", "Inventory"]
-    ];
+    tableInventory(inventory);
+    managerMenu();
+  })
+}
 
-    inventory.forEach(product => {
-      let col = [];
-      col.push(product.id, product.product_name, product.department_name, product.price, product.stock_quantity);
-      data.push(col);
-    })
-    let output = table(data);
-    console.log(output);
+const lowInventory = () => {
+
+  db.query("SELECT * FROM products WHERE stock_quantity <=5", function(err, inventory) {
+    if (err) throw err;
+    tableInventory(inventory);
     managerMenu();
   })
 }
 
 db.connect(err => {
+  
   if (err) throw err;
   console.log("Connected to database.\n");
   managerMenu();
